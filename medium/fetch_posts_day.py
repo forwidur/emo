@@ -25,18 +25,14 @@ def post_links_for_date(date):
 
     return res
 
+def scrape_day(db_path, date):
+    posts = post_links_for_date(date)
 
-def main():
-    db_path = sys.argv[1]
-
-    yesterday = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
-    posts = post_links_for_date(yesterday)
-
-    print(len(posts))
+    print(date, len(posts))
 
     if not os.path.exists(db_path):
         os.makedirs(db_path)
-    db = plyvel.DB(db_path + yesterday, create_if_missing=True)
+    db = plyvel.DB(db_path + date, create_if_missing=True)
 
     for url in posts:
         print(url)
@@ -44,6 +40,13 @@ def main():
         db.put(url.encode(), p.content)
 
     db.close()
+
+
+def main():
+    db_path = sys.argv[1]
+
+    yesterday = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
+    scrape_day(db_path, yesterday)
 
 if __name__== "__main__":
     main()

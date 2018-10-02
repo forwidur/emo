@@ -3,6 +3,7 @@ import os
 import sys
 
 from bs4 import BeautifulSoup
+from langdetect import detect
 import plyvel
 
 def process_raw_html(html):
@@ -26,14 +27,26 @@ def process_raw_html(html):
     return {'title': title, 'body': body}
 
 def process_raw_path(raw_path, out_db):
-    print("Processing %s." % (raw_path))
+    print("Processing %s. " % (raw_path), end='')
     raw_db = plyvel.DB(raw_path)
 
+    total = 0
+    eng = 0
+    long_enough = 0
     for url, raw_post in raw_db:
-       post = process_raw_html(raw_post)
-       out_db.put(url, json.dumps(post, separators=(',',':')).encode())
+        post = process_raw_html(raw_post)
+        total = total + 1
+        if len(post["body"]) < 500:
+            continue
+        long_enough = long_enough + 1
+        try:
+            if detect(post["body"]) == "en":
+                out_db.put(url, json.dumps(post, separators=(',',':')).encode())
+                eng = eng + 1
+        except:
+            print(post)
 
-    print("Done.")
+    print("Total: %d, long enough: %d, English: %d" % (total, long_enough, eng))
 
 def main():
     raw_days_path = sys.argv[1]

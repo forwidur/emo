@@ -44,9 +44,12 @@ def scrape_day(db_path, date):
 
 def main():
     db_path = sys.argv[1]
+    # Default to yesterday.
+    dt = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
+    if len(sys.argv) > 2:
+        dt = sys.argv[2]
 
-    yesterday = (date.today() - timedelta(1)).strftime('%Y-%m-%d')
-    scrape_day(db_path, yesterday)
+    scrape_day(db_path, dt)
 
 if __name__== "__main__":
     main()

@@ -37,6 +37,9 @@ def scrape_day(db_path, date):
     for url in posts:
         print(url)
         p = requests.get(url, headers)
+        if p.status_code != 200:
+            sys.stderr.write("Error fetching %s: %d" % (url, p.status_code))
+            continue
         db.put(url.encode(), p.content)
 
     db.close()

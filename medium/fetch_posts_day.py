@@ -35,9 +35,16 @@ def scrape_day(db_path, date):
     db = plyvel.DB(db_path + date, create_if_missing=True)
 
     for url in posts:
-        print(url)
+        print(url, end='')
+        if db.get(url.encode(), fill_cache=None) != None:  # Post already fetched.
+            print(" HIT")
+            continue
         p = requests.get(url, headers)
+        if p.status_code != 200:
+            sys.stderr.write("Error fetching %s: %d" % (url, p.status_code))
+            continue
         db.put(url.encode(), p.content)
+        print(" fetched")
 
     db.close()
 

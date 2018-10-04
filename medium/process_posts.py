@@ -44,7 +44,7 @@ def process_raw_path(raw_path, out_db):
                 out_db.put(url, json.dumps(post, separators=(',',':')).encode())
                 eng = eng + 1
         except:
-            print(post)
+            print(url, post)
 
     print("Total: %d, long enough: %d, English: %d" % (total, long_enough, eng))
 
